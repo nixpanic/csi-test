@@ -99,6 +99,7 @@ push: $(CMDS:%=push-%)
 
 clean:
 	-rm -rf bin
+	-rm -f cmd/csi-sanity/csi-sanity
 
 test: check-go-version-go
 
