@@ -803,16 +803,27 @@ var _ = DescribeSanity("Controller Service [Controller Server]", func(sc *TestCo
 				},
 			}
 			volume2, err := c.CreateVolume(context.Background(), vol2Req)
-			Expect(err).NotTo(HaveOccurred())
-
-			By("cleaning up deleting the volume created from source volume")
-			delVol2Req := MakeDeleteVolumeReq(sc, volume2.GetVolume().GetVolumeId())
-			_, err = c.DeleteVolume(context.Background(), delVol2Req)
-			Expect(err).NotTo(HaveOccurred())
+			skipDeleteClone := false
+			serverError, ok := status.FromError(err)
+			Expect(ok).To(BeTrue())
+			if serverError.Code() == codes.InvalidArgument {
+				skipDeleteClone = true
+			} else {
+				Expect(err).NotTo(HaveOccurred())
+			}
 
 			By("cleaning up deleting the source volume")
 			delVol1Req := MakeDeleteVolumeReq(sc, volume1.GetVolume().GetVolumeId())
 			_, err = c.DeleteVolume(context.Background(), delVol1Req)
+			Expect(err).NotTo(HaveOccurred())
+
+			if skipDeleteClone {
+				Skip("Volume Cloning from VolumeSource not supported")
+			}
+
+			By("cleaning up deleting the volume created from source volume")
+			delVol2Req := MakeDeleteVolumeReq(sc, volume2.GetVolume().GetVolumeId())
+			_, err = c.DeleteVolume(context.Background(), delVol2Req)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
