@@ -846,6 +846,9 @@ var _ = DescribeSanity("Controller Service [Controller Server]", func(sc *TestCo
 			Expect(err).To(HaveOccurred())
 			serverError, ok := status.FromError(err)
 			Expect(ok).To(BeTrue())
+			if serverError.Code() == codes.InvalidArgument {
+				Skip("Volume Cloning from VolumeSource not supported")
+			}
 			Expect(serverError.Code()).To(Equal(codes.NotFound))
 		})
 	})
