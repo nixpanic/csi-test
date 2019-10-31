@@ -150,6 +150,10 @@ var _ = DescribeSanity("Node Service", func(sc *TestContext) {
 		BeforeEach(func() {
 			i = csi.NewIdentityClient(sc.Conn)
 			accessibilityConstraintSupported = isPluginCapabilitySupported(i, csi.PluginCapability_Service_VOLUME_ACCESSIBILITY_CONSTRAINTS)
+
+			if !controllerPublishSupported {
+				Skip("Controller Service does not have PUBLISH_UNPUBLISH_VOLUME: NodeGetInfo not supported")
+			}
 		})
 
 		It("should return appropriate values", func() {
