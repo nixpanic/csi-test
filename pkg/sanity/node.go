@@ -574,15 +574,17 @@ var _ = DescribeSanity("Node Service", func(sc *TestContext) {
 			Expect(nodepubvol).NotTo(BeNil())
 
 			// NodeGetVolumeStats
-			By("Get node volume stats")
-			_, err = c.NodeGetVolumeStats(
-				context.Background(),
-				&csi.NodeGetVolumeStatsRequest{
-					VolumeId:   vol.GetVolume().GetVolumeId(),
-					VolumePath: "some/path",
-				},
-			)
-			Expect(err).To(HaveOccurred())
+			if nodeVolumeStatsSupported {
+				By("Get node volume stats")
+				_, err = c.NodeGetVolumeStats(
+					context.Background(),
+					&csi.NodeGetVolumeStatsRequest{
+						VolumeId:   vol.GetVolume().GetVolumeId(),
+						VolumePath: "some/path",
+					},
+				)
+				Expect(err).To(HaveOccurred())
+			}
 
 			serverError, ok := status.FromError(err)
 			Expect(ok).To(BeTrue())
