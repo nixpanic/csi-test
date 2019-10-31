@@ -644,6 +644,9 @@ var _ = DescribeSanity("Node Service", func(sc *TestContext) {
 		if !providesControllerService {
 			Skip("Controller Service not provided: CreateVolume not supported")
 		}
+		if !controllerPublishSupported {
+			Skip("Controller Service does not have PUBLISH_UNPUBLISH_VOLUME: NodeGetInfo not supported")
+		}
 
 		name := UniqueString("sanity-node-full")
 
